@@ -2,22 +2,20 @@
 //! sokol_app's objective C code and Makepad's (https://github.com/makepad/makepad/blob/live/platform/src/platform/apple)
 //! platform implementation
 //!
-//! The only third party dependency is ""
 use {
     crate::{
         event::{EventHandler, MouseButton},
         native::{
-            macos::{apple_util::*, frameworks::*},
+            apple::{
+                apple_util::{self, *},
+                frameworks::{self, *},
+            },
             NativeDisplayData,
         },
         Context, CursorIcon, GraphicsContext,
     },
     std::{collections::HashMap, os::raw::c_void},
 };
-
-mod apple_util;
-mod frameworks;
-pub mod gl;
 
 pub struct MacosDisplay {
     window: ObjcId,
@@ -129,7 +127,7 @@ impl MacosDisplay {
         }
     }
 }
-pub struct WindowPayload {
+struct WindowPayload {
     display: MacosDisplay,
     context: Option<GraphicsContext>,
     event_handler: Option<Box<dyn EventHandler>>,
@@ -544,7 +542,7 @@ unsafe fn create_opengl_view(window_frame: NSRect, sample_count: i32, high_dpi: 
     ];
 
     if high_dpi {
-        let () = msg_send![view, setWantsBestResolutionOpenGLSurface: YES];
+        let () = msg_send![view, setWantsBestResolutionOpenGLSurface: Yes];
     } else {
         let () = msg_send![view, setWantsBestResolutionOpenGLSurface: NO];
     }
@@ -616,7 +614,7 @@ where
 
     (*window_delegate).set_ivar("display_ptr", &mut payload as *mut _ as *mut c_void);
 
-    let title = str_to_nsstring(&conf.window_title);
+    Let title = str_to_nsstring(&conf.window_title);
     //let () = msg_send![window, setReleasedWhenClosed: NO];
     let () = msg_send![window, setTitle: title];
     let () = msg_send![window, center];
